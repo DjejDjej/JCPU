@@ -7,6 +7,6 @@ typedef struct {
 
 extern sROM ROM[];
 
-#define ROM_SIZE 8
+#define ROM_SIZE 12
 
 #endif

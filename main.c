@@ -5,6 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
+
+
 // TODO find Memory Leak:
 char **getCode(FILE *file) {
 
@@ -32,6 +34,7 @@ char **getCode(FILE *file) {
       str_buf[c_index++] = c;
     }
   }
+
   return code;
 }
 
@@ -70,7 +73,6 @@ int identifyInstructions(char *srcLine) {
   }
 
   execInst(code);
-
   // Free all allocated memory
   free(Line);
 
@@ -98,8 +100,7 @@ int main(int argc, char **argv) {
       }
       line_count++;
     }
-
-    while (end == 0) {
+    while (1) {
       if (registers[15] < line_count) {
         identifyInstructions(code[registers[15]]);
         registers[15]++;

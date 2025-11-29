@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include "ram.h"
 #include "rom.h"
 #include <errno.h>
 #include <stdint.h>
@@ -8,7 +9,6 @@
 
 uint8_t registers[REG_COUNT];
 
-int end = 0;
 int initCPU() {
   for (int i = 0; i < REG_COUNT; i++) {
     registers[i] = 0;
@@ -16,18 +16,20 @@ int initCPU() {
   return 0;
 }
 
-uint8_t strToUint(char *str) {
+uint8_t hexStrToUint8(const char *str) {
+    char *endptr = NULL;
+    errno = 0;
 
-  char *endptr;
-  errno = 0;
+    // Parse as hexadecimal
+    unsigned long val = strtoul(str, &endptr, 16);
 
-  unsigned long val = strtoul(str, &endptr, 10);
+    // Validate: no errors, entire string consumed, and fits in uint8_t
+    if (errno != 0 || *endptr != '\0' || val > 0xFF) {
+        printf("Invalid hex input for uint8_t: \"%s\"\n", str);
+        return 0;   // Or handle error differently
+    }
 
-  if (errno != 0 || *endptr != '\0' || val > 255) {
-    printf("Invalid input for uint8_t\n");
-  }
-
-  return (uint8_t)val;
+    return (uint8_t)val;
 }
 
 int hexStrToInt(char *str) { return (int)strtol(str, NULL, 16); }
@@ -35,7 +37,7 @@ int hexStrToInt(char *str) { return (int)strtol(str, NULL, 16); }
 //// Instructions
 
 int movRV(char *reg, char *val) {
-  uint8_t value = strToUint(val);
+  uint8_t value = hexStrToUint8(val);
   int regist = hexStrToInt(reg);
   registers[regist] = value;
   return 0;
@@ -80,13 +82,12 @@ int dec(char *reg, char *n) {
 }
 
 int interupt(char *n, char *nic) {
-
   switch (registers[14]) {
   case 1:
     printf("%u\n", registers[13]);
     break;
   case 4:
-    end = 1;
+    exit(0);
     break;
   }
 
@@ -94,7 +95,22 @@ int interupt(char *n, char *nic) {
 }
 
 int jmpln(char *loc, char *NaN) { // label will be used later on.
-  registers[7] = atoi(loc);
+
+  registers[15] = atoi(loc);
+  return 0;
+}
+int movVM(char *addr, char *val) {
+
+  RAM[hexStrToInt(addr)] = hexStrToUint8(val);
+  return 0;
+}
+int movRM(char *addr, char *regVal) {
+  RAM[hexStrToInt(addr)] = registers[hexStrToInt(regVal)];
+  return 0;
+}
+int movMR(char *addr, char *regVal) {
+
+  registers[hexStrToInt(regVal)] = RAM[hexStrToInt(addr)];
   return 0;
 }
 
