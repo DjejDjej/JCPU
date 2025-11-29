@@ -100,10 +100,9 @@ int main(int argc, char **argv) {
     }
 
     while (end == 0) {
-      // printf("%d",end);
-      if (registers[7] < line_count) {
-        identifyInstructions(code[registers[7]]);
-        registers[7]++;
+      if (registers[15] < line_count) {
+        identifyInstructions(code[registers[15]]);
+        registers[15]++;
       }
     }
   }
