@@ -1,0 +1,60 @@
+#include "util.h"
+#include <errno.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int16_t hexStrToInt16(const char *str) {
+  char *endptr = NULL;
+  errno = 0;
+
+  // Parse as hexadecimal
+  unsigned long val = strtoul(str, &endptr, 16);
+
+  // Validate: no errors, entire string consumed, and fits in int16_t
+  if (errno != 0 || *endptr != '\0' || val > 0xFFFF) {
+    printf("Invalid hex input for int16_t: \"%s\"\n", str);
+    return 0;
+  }
+
+  // Interpret the 16-bit value as signed
+  if (val & 0x8000) {
+    // Negative number in two's complement
+    return (int16_t)(val - 0x10000);
+  }
+
+  // Positive number
+  return (int16_t)val;
+}
+
+uint8_t hexStrToUint8(const char *str) {
+  char *endptr = NULL;
+  errno = 0;
+
+  // Parse as hexadecimal
+  unsigned long val = strtoul(str, &endptr, 16);
+
+  // Validate: no errors, entire string consumed, and fits in uint8_t
+  if (errno != 0 || *endptr != '\0' || val > 0xFF) {
+    printf("Invalid hex input for uint8_t: \"%s\"\n", str);
+    return 0; // Or handle error differently
+  }
+
+  return (uint8_t)val;
+}
+
+int hexStrToInt(char *str) { return (int)strtol(str, NULL, 16); }
+
+char *strSlice(char *str, int start, int num_chars) {
+  if (num_chars <= 0) {
+    return NULL;
+  }
+  char *output = malloc(num_chars);
+  if ((start + num_chars) > strlen(str)) {
+    return NULL;
+  }
+  for (size_t i = 0; i < num_chars; i++) {
+    output[i] = str[start + i];
+  }
+  return output;
+}

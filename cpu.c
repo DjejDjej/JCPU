@@ -1,11 +1,9 @@
 #include "cpu.h"
-#include "ram.h"
-#include "rom.h"
-#include <errno.h>
+#include "mem.h"
+#include "util.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 uint8_t registers[REG_COUNT];
 uint16_t sp;
@@ -18,57 +16,12 @@ int initCPU() {
   return 0;
 }
 
-int16_t hexStrToInt16(const char *str) {
-  char *endptr = NULL;
-  errno = 0;
-
-  // Parse as hexadecimal
-  unsigned long val = strtoul(str, &endptr, 16);
-
-  // Validate: no errors, entire string consumed, and fits in int16_t
-  if (errno != 0 || *endptr != '\0' || val > 0xFFFF) {
-    printf("Invalid hex input for int16_t: \"%s\"\n", str);
-    return 0;
-  }
-
-  // Interpret the 16-bit value as signed
-  if (val & 0x8000) {
-    // Negative number in two's complement
-    return (int16_t)(val - 0x10000);
-  }
-
-  // Positive number
-  return (int16_t)val;
-}
-
-uint8_t hexStrToUint8(const char *str) {
-  char *endptr = NULL;
-  errno = 0;
-
-  // Parse as hexadecimal
-  unsigned long val = strtoul(str, &endptr, 16);
-
-  // Validate: no errors, entire string consumed, and fits in uint8_t
-  if (errno != 0 || *endptr != '\0' || val > 0xFF) {
-    printf("Invalid hex input for uint8_t: \"%s\"\n", str);
-    return 0; // Or handle error differently
-  }
-
-  return (uint8_t)val;
-}
-
-int hexStrToInt(char *str) { return (int)strtol(str, NULL, 16); }
-
-void inspectMem() {
-
-  for (int i = 0; i < RAM_SIZE; i++) {
-    if (RAM[i] != 0) {
-      printf("%u", RAM[i]);
-    }
-  }
-}
-
 //// Instructions
+
+int load(char *len, char *str) {
+  printf("%s %s", len, str);
+  return 0;
+}
 
 // 12
 int movRV(char *reg, char *val) {
@@ -136,7 +89,7 @@ int interupt(char *n, char *nic) {
 // 11
 int jmpln(char *loc, char *NaN) { // label will be used later on.
 
-  registers[hexStrToInt("0x0F")] = hexStrToInt(loc);
+  PC = hexStrToInt(loc);
   return 0;
 }
 // 14

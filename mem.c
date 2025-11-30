@@ -1,5 +1,7 @@
-#include "rom.h"
+#include <stdint.h>
+#include <stdio.h>
 #include "cpu.h"
+#include "mem.h"
 
 sROM ROM[] = {
 
@@ -8,6 +10,7 @@ sROM ROM[] = {
     // 0F - PC
 
 //   inst  cfunc     arg1 arg2
+    {"01", load,    2, -1},
     {"03", interupt, 0, 0},
     {"11", jmpln,    2, 0},
     {"12", movRV,    2, 2},
@@ -22,3 +25,15 @@ sROM ROM[] = {
     {"41", push,     2, 0},
     {"42", pop,      2, 2},
 };
+
+
+uint8_t RAM[RAM_SIZE];
+
+int initRAM() {
+  for (size_t i = 0; i < RAM_SIZE; i++) {
+    RAM[i] = 0;
+  }
+
+  return 0;
+}
+

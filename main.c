@@ -1,21 +1,10 @@
 #include "cpu.h"
-#include "ram.h"
-#include "rom.h"
+#include "mem.h"
+#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-char *strSlice(char *str, int start, int num_chars) {
-  char *output = malloc(num_chars);
-  if ((start + num_chars) > strlen(str)) {
-    return NULL;
-  }
-  for (size_t i = 0; i < num_chars; i++) {
-    output[i] = str[start + i];
-  }
-  return output;
-}
 
 char *getRawCode(FILE *file) {
 
@@ -50,17 +39,25 @@ int execCode(FILE *file) {
   char *raw_code = getRawCode(file);
   while (1) {
     fflush(stdout);
-    if (registers[hexStrToInt("0x0F")] >= strlen(raw_code)) {
+    if (PC >= strlen(raw_code)) {
       continue;
     }
 
-    char *inst = strSlice(raw_code, registers[hexStrToInt("0x0F")], INST_SIZE);
+    char *inst = strSlice(raw_code, PC, INST_SIZE);
     sROM *s = getInst(inst);
-    registers[hexStrToInt("0x0F")] += INST_SIZE;
-    char *arg1 = strSlice(raw_code, registers[hexStrToInt("0x0F")], s->arg1_s);
-    registers[hexStrToInt("0x0F")] += s->arg1_s;
-    char *arg2 = strSlice(raw_code, registers[hexStrToInt("0x0F")], s->arg2_s);
-    registers[hexStrToInt("0x0F")] += s->arg2_s;
+    PC += INST_SIZE;
+
+    char *arg1 = strSlice(raw_code, PC, s->arg1_s);
+    PC += s->arg1_s;
+
+    char *arg2 = strSlice(raw_code, PC, s->arg2_s);
+
+    if (strcmp(s->hex, "01") == 0) {
+      arg2 = strSlice(raw_code, PC, atoi(arg1));
+      s->arg2_s = strlen(arg2);
+    }
+
+    PC += s->arg2_s;
     s->exec(arg1, arg2);
   }
   return 1;
@@ -68,15 +65,14 @@ int execCode(FILE *file) {
 
 int main(int argc, char **argv) {
 
-  initCPU();
-  initRAM();
   if (argc > 0) {
     FILE *file;
     file = fopen(argv[1], "r");
     if (file == NULL) {
       return 1;
     }
-
+    initCPU();
+    initRAM();
     execCode(file);
   }
 
