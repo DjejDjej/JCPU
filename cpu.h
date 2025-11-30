@@ -4,19 +4,23 @@
 
 int execInst(char **code);
 int initCPU();
-//instructions
+// instructions
 int jmpln(char *loc, char *NaN);
-int interupt(char *n, char *nic); 
+int interupt(char *n, char *nic);
 int movRV(char *value1, char *value2);
 int movRR(char *desReg, char *srcReg);
 int movVM(char *addr, char *val);
 int movRM(char *addr, char *regVal);
-int movMR(char *addr, char *regVal); 
+int movMR(char *addr, char *regVal);
 int addRR(char *desReg, char *srcReg);
 int subRR(char *desReg, char *srcReg);
 int inc(char *reg, char *n);
 int dec(char *reg, char *n);
-//instructions
+int hexStrToInt(char *str);
+int pop(char *value, char *n);
+int push(char *value, char *n);
+// instructions
 #define REG_COUNT 16
+#define SP_START 65534
 extern uint8_t registers[REG_COUNT];
 #endif
