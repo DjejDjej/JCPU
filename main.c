@@ -23,11 +23,11 @@ char *getRawCode(FILE *file) {
   return buffer;
 }
 
-sROM *getInst(char *inst) {
+instSets *getInst(char *inst) {
 
-  for (size_t i = 0; i < ROM_SIZE; i++) {
-    if (strcmp(ROM[i].hex, inst) == 0) {
-      return &ROM[i];
+  for (size_t i = 0; i < INST_COUNT; i++) {
+    if (strcmp(instSet[i].hex, inst) == 0) {
+      return &instSet[i];
     }
   }
 
@@ -44,13 +44,13 @@ int execCode(FILE *file) {
     }
 
     char *inst = strSlice(raw_code, PC, INST_SIZE);
-    sROM *s = getInst(inst);
+    instSets *s = getInst(inst);
     PC += INST_SIZE;
 
     char *arg1 = strSlice(raw_code, PC, s->arg1_s);
     PC += s->arg1_s;
 
-    char *arg2 = strSlice(raw_code, PC,  s->arg2_s);
+    char *arg2 = strSlice(raw_code, PC, s->arg2_s);
 
     if (strcmp(s->hex, "01") == 0) {
       arg2 = strSlice(raw_code, PC, hexStrToInt(arg1));
@@ -76,8 +76,13 @@ int main(int argc, char **argv) {
       return 1;
     }
     initCPU();
-    initRAM();
-    execCode(file);
+    initMEM();
+    printf("%i\n",memOp(1,"8001","0001"));
+    printf("%i\n",memOp(0,"8001","0001"));
+
+
+    // execCode(file);
+      
   }
 
   return 0;

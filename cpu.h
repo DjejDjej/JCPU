@@ -20,6 +20,7 @@ int dec(char *reg, char *n);
 int hexStrToInt(char *str);
 int pop(char *value, char *n);
 int push(char *value, char *n);
+void showMem() ;
 // instructions
 #define REG_COUNT 16
 #define SP_START 65534
