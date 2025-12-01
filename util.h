@@ -1,7 +1,7 @@
 #ifndef util_h
 #include <stdint.h>
 #define util_h
-char *strSlice(char *str, int start, int num_chars);
+char *strSlice(const char *str, int start, int num_chars);
 
 uint8_t hexStrToUint8(const char *str);
 int16_t hexStrToInt16(const char *str);

@@ -16,10 +16,30 @@ int initCPU() {
   return 0;
 }
 
-//// Instructions
+void showMem() {
 
+  for (int i = 0; i < RAM_SIZE; i++) {
+    if (RAM[i] != 0) {
+      printf("MemAddr -> %i Value -> %c\n", i, RAM[i]);
+    }
+    fflush(stdout);
+  }
+}
+
+//// Instructions
+// 01
 int load(char *len, char *str) {
-  printf("%s %s", len, str);
+  int add = hexStrToInt(strSlice(len, 0, 4)); // MAGIC NUMBERS WOHOOOO
+  int ln = hexStrToInt(strSlice(len, 4, 2));
+  int count = 0;
+  for (size_t i = 0; i < ln;) {
+
+    char *buf = strSlice(str, i, 2);
+    i += 2;
+    RAM[count + add] = hexStrToUint8(buf);
+    count++;
+  }
+  showMem();
   return 0;
 }
 
@@ -114,7 +134,6 @@ int push(char *value, char *n) {
 
   sp--;
   RAM[sp] = hexStrToUint8(value);
-  // inspectMem();
   return 0;
 }
 // 42
@@ -123,7 +142,6 @@ int pop(char *dst, char *n) {
   registers[hexStrToUint8(dst)] = RAM[sp];
   RAM[sp] = 0;
   sp++;
-  // inspectMem();
   return 0;
 }
 

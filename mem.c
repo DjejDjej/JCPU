@@ -10,7 +10,7 @@ sROM ROM[] = {
     // 0F - PC
 
 //   inst  cfunc     arg1 arg2
-    {"01", load,    2, -1},
+    {"01", load,    6, 0},
     {"03", interupt, 0, 0},
     {"11", jmpln,    2, 0},
     {"12", movRV,    2, 2},

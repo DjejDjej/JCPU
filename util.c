@@ -45,16 +45,23 @@ uint8_t hexStrToUint8(const char *str) {
 
 int hexStrToInt(char *str) { return (int)strtol(str, NULL, 16); }
 
-char *strSlice(char *str, int start, int num_chars) {
-  if (num_chars <= 0) {
-    return NULL;
-  }
-  char *output = malloc(num_chars);
-  if ((start + num_chars) > strlen(str)) {
-    return NULL;
-  }
-  for (size_t i = 0; i < num_chars; i++) {
-    output[i] = str[start + i];
-  }
-  return output;
+char *strSlice(const char *str, int start, int num_chars) {
+    if (num_chars <= 0) {
+        return NULL;
+    }
+
+    size_t len = strlen(str);
+    if ((size_t)(start + num_chars) > len) {
+        return NULL;
+    }
+
+    char *output = malloc(num_chars + 1);
+    if (!output) return NULL;
+
+    memcpy(output, str + start, num_chars);
+    output[num_chars] = '\0';   
+
+    return output;
 }
+
+

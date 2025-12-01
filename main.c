@@ -19,7 +19,7 @@ char *getRawCode(FILE *file) {
     if (ch != ' ' && ch != '\n' && ch != '\0')
       buffer[i++] = ch;
   }
-
+  buffer[i] = '\0';
   return buffer;
 }
 
@@ -50,15 +50,19 @@ int execCode(FILE *file) {
     char *arg1 = strSlice(raw_code, PC, s->arg1_s);
     PC += s->arg1_s;
 
-    char *arg2 = strSlice(raw_code, PC, s->arg2_s);
+    char *arg2 = strSlice(raw_code, PC,  s->arg2_s);
 
     if (strcmp(s->hex, "01") == 0) {
-      arg2 = strSlice(raw_code, PC, atoi(arg1));
+      arg2 = strSlice(raw_code, PC, hexStrToInt(arg1));
       s->arg2_s = strlen(arg2);
     }
 
     PC += s->arg2_s;
     s->exec(arg1, arg2);
+
+    free(inst);
+    free(arg1);
+    free(arg2);
   }
   return 1;
 }

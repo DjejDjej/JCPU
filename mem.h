@@ -6,6 +6,7 @@ typedef struct {
   int (*exec)(char *, char *);
   int arg1_s;
   int arg2_s;
+  int (*exec3)(char *, char *, char *);
 } sROM;
 
 int initRAM(void);
