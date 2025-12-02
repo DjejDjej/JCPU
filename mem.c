@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "cpu.h"
 #include "util.h"
 #include "mem.h"
@@ -46,73 +47,200 @@ instSets instSet[] = {
 
 int initMEM() {
   for (size_t i = 0; i < RAM_SIZE; i++) {
-   RAM[i] = 0;
+    RAM[i] = 0;
   }
   for (size_t i = 0; i < STACK_SIZE; i++) {
-   STACK[i] = 0;
+    STACK[i] = 0;
   }
   for (size_t i = 0; i < IO_SIZE; i++) {
-   IO[i] = 0;
+    IO[i] = 0;
   }
   for (size_t i = 0; i < ROM_SIZE; i++) {
-   ROM[i] = 0;
+    ROM[i] = 0;
   }
   return 0;
 }
 
 
-int memoryBus(char *addS) {
-  int add = hexStrToInt(addS);
+void testMEM() {
 
-  if (add >= RAM_START && add <= STACK_START + STACK_SIZE) {
+  int globalCount = 0;
+  int value = 120;
+  for (int i = 0; i < RAM_SIZE; i++) {
+    char *hexAddr = malloc(8);
+    char *hexAddr_i = malloc(8);
+   
+    if (value >= 255){value =120;}
+    
+    snprintf(hexAddr, 5, "%X", globalCount);
+    snprintf(hexAddr_i, 5, "%X", value++);
 
-    return 0;
-  } else if (add >= STACK_START && add <= STACK_START + STACK_SIZE) {
+    if (memOp(1, hexAddr, hexAddr_i) != 0) {
+      printf("ERROR at %s", hexAddr);
 
-    return 1;
-  } else if (add >= IO_START && add <= IO_START + IO_SIZE) {
+      if (RAM[i] != memOp(0, hexAddr, "")) {
 
-   return 2;
-  } else if (add >= ROM_START && add <= ROM_START + ROM_SIZE) {
+        printf("ERROR value at %s", hexAddr);
+      }
+    }
+    globalCount++;
+    fflush(stdout);
+  }
 
-    return 3;
-  } else {
+for (int i = 0; i < STACK_SIZE; i++) {
+    char *hexAddr = malloc(8);
+    char *hexAddr_i = malloc(8);
+   
+    if (value >= 255){value =120;}
+    
+    snprintf(hexAddr, 5, "%X", globalCount);
+    snprintf(hexAddr_i, 5, "%X", value++);
+
+    if (memOp(1, hexAddr, hexAddr_i) != 0) {
+      printf("ERROR at %s", hexAddr);
+
+      if (STACK[i] != memOp(0, hexAddr, "")) {
+
+        printf("ERROR value at %s", hexAddr);
+      }
+    }
+    globalCount++;
+    fflush(stdout);
+  }
+
+for (int i = 0; i < IO_SIZE; i++) {
+    char *hexAddr = malloc(8);
+    char *hexAddr_i = malloc(8);
+   
+    if (value >= 255){value =120;}
+    
+    snprintf(hexAddr, 5, "%X", globalCount);
+    snprintf(hexAddr_i, 5, "%X", value++);
+
+    if (memOp(1, hexAddr, hexAddr_i) != 0) {
+      printf("ERROR at %s", hexAddr);
+
+      if (IO[i] != memOp(0, hexAddr, "")) {
+
+        printf("ERROR value at %s", hexAddr);
+      }
+    }
+    globalCount++;
+    fflush(stdout);
+  }
+for (int i = 0; i < ROM_SIZE; i++) {
+    char *hexAddr = malloc(8);
+    char *hexAddr_i = malloc(8);
+   
+    if (value >= 255){value =120;}
+    
+    snprintf(hexAddr, 5, "%X", globalCount);
+    snprintf(hexAddr_i, 5, "%X", value++);
+
+    if (memOp(1, hexAddr, hexAddr_i) != 0) {
+      printf("ERROR at %s", hexAddr);
+
+      if (ROM[i] != memOp(0, hexAddr, "")) {
+
+        printf("ERROR value at %s", hexAddr);
+      }
+    }
+    globalCount++;
+    fflush(stdout);
+  }
+
+  fflush(stdout);
+  printf("TEST IS DONE ");
+  }
+
+  void showMEM() {
+
+    int globalCount = 0;
+    for (int i = 0; i < RAM_SIZE; i++) {
+      if (RAM[i] != 0) {
+        printf("MemAddr -> %i Value -> %i\n", i, RAM[i]);
+      }
+      globalCount++;
+      fflush(stdout);
+    }
+
+    for (int i = 0; i < STACK_SIZE; i++) {
+      if (STACK[i] != 0) {
+        printf("StackAddr-> %i Value -> %i\n", i, STACK[i]);
+      }
+
+      globalCount++;
+      fflush(stdout);
+    }
+    for (int i = 0; i < IO_SIZE; i++) {
+      if (IO[i] != 0) {
+        printf("IO Addr-> %i Value -> %i\n", i, IO[i]);
+      }
+
+      globalCount++;
+      fflush(stdout);
+    }
+
+    for (int i = 0; i < ROM_SIZE; i++) {
+      if (ROM[i] != 0) {
+        printf("ROM Addr-> %i Value -> %i\n", i, ROM[i]);
+      }
+
+      globalCount++;
+      fflush(stdout);
+    }
+  }
+
+  int memoryBus(char *addS) {
+    int add = hexStrToInt(addS);
+
+    if (add >= RAM_START && add <= STACK_START + STACK_SIZE) {
+
+      return 0;
+    } else if (add >= STACK_START && add <= STACK_START + STACK_SIZE) {
+
+      return 1;
+    } else if (add >= IO_START && add <= IO_START + IO_SIZE) {
+
+      return 2;
+    } else if (add >= ROM_START && add <= ROM_START + ROM_SIZE) {
+
+      return 3;
+    } else {
+
+      return -1;
+    }
 
     return -1;
   }
 
-  return -1;
-}
+  uint8_t memOp(int op, char *add, char *value) {
+    int memType = memoryBus(add);
+    uint8_t *current = NULL;
+    int offset = 0;
 
-uint8_t memOp(int op ,char *add, char *value){
-int memType = memoryBus(add);
-uint8_t *current = NULL; 
-int offset = 0;
+    if (memType == 0) {
+      current = RAM;
+    }
+    if (memType == 1) {
+      current = STACK;
+      offset = RAM_SIZE;
+    }
+    if (memType == 2) {
+      current = IO;
+      offset = RAM_SIZE + STACK_SIZE;
+    }
+    if (memType == 3) {
+      current = ROM;
+      offset = RAM_SIZE + STACK_SIZE + IO_SIZE;
+    }
 
-if(memType == 0) {
-current = RAM;
-}
-if(memType == 1) {
-current = STACK;
-offset = RAM_SIZE;
-}
-if(memType == 2) {
-current = IO;
-offset = RAM_SIZE + STACK_SIZE;
-}
-if(memType == 3){
-current = ROM;
-offset = RAM_SIZE + STACK_SIZE + IO_SIZE;
-}
-
-if(op == 0  ){
-return current[hexStrToInt(add) - offset];
-}
-if(op == 1 ){
-current[hexStrToInt(add) - offset] = hexStrToUint8(value);
-return 0;
-}
-return 0;
-}
-
-
+    if (op == 0) {
+      return current[hexStrToInt(add) - offset];
+    }
+    if (op == 1) {
+      current[hexStrToInt(add) - offset] = hexStrToUint8(value);
+      return 0;
+    }
+    return 0;
+  }

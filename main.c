@@ -77,10 +77,10 @@ int main(int argc, char **argv) {
     }
     initCPU();
     initMEM();
-    printf("%i\n",memOp(1,"8001","0001"));
-    printf("%i\n",memOp(0,"8001","0001"));
 
 
+testMEM(); 
+// showMEM();
     // execCode(file);
       
   }

@@ -16,15 +16,7 @@ int initCPU() {
   return 0;
 }
 
-void showMem() {
 
-  for (int i = 0; i < RAM_SIZE; i++) {
-    if (RAM[i] != 0) {
-      printf("MemAddr -> %i Value -> %c\n", i, RAM[i]);
-    }
-    fflush(stdout);
-  }
-}
 
 //// Instructions
 // 01
@@ -36,10 +28,12 @@ int load(char *len, char *str) {
 
     char *buf = strSlice(str, i, 2);
     i += 2;
-    RAM[count + add] = hexStrToUint8(buf);
+    char *hexAddr = malloc(5);
+    snprintf(hexAddr, sizeof(hexAddr), "%X", count + add);
+    memOp(1,hexAddr,buf);
     count++;
   }
-  showMem();
+  // showMEM();
   return 0;
 }
 
