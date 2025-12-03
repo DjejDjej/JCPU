@@ -23,7 +23,8 @@ int push(char *value, char *n);
 void showMem() ;
 // instructions
 #define REG_COUNT 16
-#define SP_START 65534
 extern uint8_t registers[REG_COUNT];
-#define PC (registers[0x0F])
+extern int PC;
 #endif
+
+

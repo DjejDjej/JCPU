@@ -194,16 +194,16 @@ for (int i = 0; i < ROM_SIZE; i++) {
   int memoryBus(char *addS) {
     int add = hexStrToInt(addS);
 
-    if (add >= RAM_START && add <= STACK_START + STACK_SIZE) {
+    if (add >= RAM_START && add < RAM_SIZE+ RAM_START) {
 
       return 0;
-    } else if (add >= STACK_START && add <= STACK_START + STACK_SIZE) {
+    } else if (add >= STACK_START && add < STACK_START + STACK_SIZE ) {
 
       return 1;
-    } else if (add >= IO_START && add <= IO_START + IO_SIZE) {
+    } else if (add >= IO_START && add < IO_START + IO_SIZE) {
 
       return 2;
-    } else if (add >= ROM_START && add <= ROM_START + ROM_SIZE) {
+    } else if (add >= ROM_START && add < ROM_START + ROM_SIZE) {
 
       return 3;
     } else {
@@ -214,33 +214,72 @@ for (int i = 0; i < ROM_SIZE; i++) {
     return -1;
   }
 
-  uint8_t memOp(int op, char *add, char *value) {
+
+
+
+
+uint8_t memOp(int op, char *add, char *value) {
+    int addr = hexStrToInt(add);
     int memType = memoryBus(add);
+    printf("\n mem type %i",memType);
     uint8_t *current = NULL;
     int offset = 0;
+    int regionSize = 0;
 
-    if (memType == 0) {
-      current = RAM;
-    }
-    if (memType == 1) {
-      current = STACK;
-      offset = RAM_SIZE;
-    }
-    if (memType == 2) {
-      current = IO;
-      offset = RAM_SIZE + STACK_SIZE;
-    }
-    if (memType == 3) {
-      current = ROM;
-      offset = RAM_SIZE + STACK_SIZE + IO_SIZE;
+    switch (memType) {
+        case 0: // RAM
+            current = RAM;
+            offset = RAM_START;
+            regionSize = RAM_SIZE;
+            break;
+
+        case 1: // STACK
+            current = STACK;
+            offset = STACK_START;
+            regionSize = STACK_SIZE;
+            break;
+
+        case 2: // IO
+            current = IO;
+            offset = IO_START;
+            regionSize = IO_SIZE;
+            break;
+
+        case 3: // ROM
+            current = ROM;
+            offset = ROM_START;
+            regionSize = ROM_SIZE;
+            break;
+
+        default:
+            throwError(2, "memOP"); // unknown mem type
+            return 0;
     }
 
+    int pos = addr - offset;
+
+    if (pos < 0 || pos >= regionSize) {
+        
+   fflush(stdout);
+	printf("%x",pos);
+	throwError(2, "memOP");
+        return 0;
+    }
+
+    // READ
     if (op == 0) {
-      return current[hexStrToInt(add) - offset];
+        return current[pos];
     }
-    if (op == 1) {
-      current[hexStrToInt(add) - offset] = hexStrToUint8(value);
-      return 0;
+
+    // WRITE
+    else if (op == 1) {
+        current[pos] = hexStrToInt(value);
+        return 0;
     }
+    fflush(stdout);
+    printf("%x",pos);
+    throwError(2, "memOP");
     return 0;
-  }
+}
+
+

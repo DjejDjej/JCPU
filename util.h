@@ -7,4 +7,5 @@ uint8_t hexStrToUint8(const char *str);
 int16_t hexStrToInt16(const char *str);
 
 int hexStrToInt(char *str);
+void throwError(int code, char *func);
 #endif

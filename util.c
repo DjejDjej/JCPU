@@ -61,7 +61,34 @@ char *strSlice(const char *str, int start, int num_chars) {
     memcpy(output, str + start, num_chars);
     output[num_chars] = '\0';   
 
+
     return output;
+}
+
+
+void throwError(int code, char *func){
+
+if(code == 0){
+
+printf("load from memory wasnt sucessful at %s ",func);
+}
+
+if(code == 1){
+
+printf("unable to get instruction at func %s",func);
+exit(0);
+
+}
+
+if(code == 2){
+
+printf("WRITING PAST OUTSIDE A MEMORY at func %s",func);
+exit(0);
+
+}
+
+
+exit(0);
 }
 
 

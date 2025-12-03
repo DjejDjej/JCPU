@@ -22,8 +22,9 @@ typedef struct {
 #define ROM_START 0x8100
 #define ROM_SIZE 0x7F00 // 0x8000 bytes (32768 bytes), ends at 0xFFFF
 
+#define MEM_SIZE (ROM_START + ROM_SIZE) 
+
 int initMEM(void);
-extern uint8_t RAM[];
 extern instSets instSet[];
 
 uint8_t memOp(int op, char *add, char *value);

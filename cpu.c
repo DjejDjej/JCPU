@@ -8,31 +8,41 @@
 uint8_t registers[REG_COUNT];
 uint16_t sp;
 
+int PC; // NEED TO IMPLEMENT REAL PC
+
 int initCPU() {
   for (int i = 0; i < REG_COUNT; i++) {
     registers[i] = 0;
   }
-  sp = SP_START;
+  sp = STACK_START + STACK_SIZE;
+  PC = 0;
   return 0;
 }
-
-
 
 //// Instructions
 // 01
 int load(char *len, char *str) {
-  int add = hexStrToInt(strSlice(len, 0, 4)); // MAGIC NUMBERS WOHOOOO
-  int ln = hexStrToInt(strSlice(len, 4, 2));
+  char *addS = strSlice(len, 0, 4);
+  char *lnS = strSlice(len, 4, 2);
+  int add = hexStrToInt(addS); // MAGIC NUMBERS WOHOOOO
+  int ln = hexStrToInt(lnS);
   int count = 0;
+
   for (size_t i = 0; i < ln;) {
 
     char *buf = strSlice(str, i, 2);
     i += 2;
     char *hexAddr = malloc(5);
-    snprintf(hexAddr, sizeof(hexAddr), "%X", count + add);
-    memOp(1,hexAddr,buf);
+    snprintf(hexAddr, 5, "%x", count + add);
+    if (memOp(1, hexAddr, buf) != 0) {
+      throwError(1, "load");
+    }
+    free(buf);
+    free(hexAddr);
     count++;
   }
+  free(addS);
+  free(lnS);
   // showMEM();
   return 0;
 }
@@ -93,6 +103,7 @@ int interupt(char *n, char *nic) {
     printf("%u\n", registers[hexStrToInt("0x0D")]);
     break;
   case 4:
+    showMEM();
     exit(0);
     break;
   }
@@ -109,32 +120,50 @@ int jmpln(char *loc, char *NaN) { // label will be used later on.
 // 14
 int movVM(char *addr, char *val) {
 
-  RAM[hexStrToInt(addr)] = hexStrToUint8(val);
+  if (memOp(1, addr, val) != 0) {
+    throwError(1, "movVM");
+  };
   return 0;
 }
 // 15
 int movRM(char *addr, char *regVal) {
-  RAM[hexStrToInt(addr)] = registers[hexStrToInt(regVal)];
+  sprintf(regVal, "%d", 42);
+
+  if (memOp(1, addr, regVal) != 0) {
+
+    throwError(1, "movRM");
+  };
   return 0;
 }
 // 16
 int movMR(char *addr, char *regVal) {
 
-  registers[hexStrToInt(regVal)] = RAM[hexStrToInt(addr)];
+  registers[hexStrToInt(regVal)] = memOp(0, addr, "");
   return 0;
 }
 // 41
 int push(char *value, char *n) {
 
   sp--;
-  RAM[sp] = hexStrToUint8(value);
+  char buff[5];
+  sprintf(buff, "%x", sp);
+  if (memOp(1, buff, value) != 0) {
+
+    throwError(1, "push");
+  };
   return 0;
 }
 // 42
 int pop(char *dst, char *n) {
+  char buff[5];
+  sprintf(buff, "%x", sp);
 
-  registers[hexStrToUint8(dst)] = RAM[sp];
-  RAM[sp] = 0;
+  registers[hexStrToUint8(dst)] = memOp(0, buff, NULL);
+  if (memOp(1, buff, 0) != 0) {
+
+    throwError(1, "pop");
+  };
+
   sp++;
   return 0;
 }

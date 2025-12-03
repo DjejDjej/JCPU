@@ -30,19 +30,20 @@ instSets *getInst(char *inst) {
       return &instSet[i];
     }
   }
-
+  
+  printf("%s\n",inst);
+  throwError(1, "getInst");
   return NULL;
 }
 
 int execCode(FILE *file) {
-
-  char *raw_code = getRawCode(file);
+int count = 0;
+char *raw_code = getRawCode(file);
   while (1) {
     fflush(stdout);
     if (PC >= strlen(raw_code)) {
       continue;
     }
-
     char *inst = strSlice(raw_code, PC, INST_SIZE);
     instSets *s = getInst(inst);
     PC += INST_SIZE;
@@ -53,13 +54,16 @@ int execCode(FILE *file) {
     char *arg2 = strSlice(raw_code, PC, s->arg2_s);
 
     if (strcmp(s->hex, "01") == 0) {
-      arg2 = strSlice(raw_code, PC, hexStrToInt(arg1));
+      char *tmp = strSlice(arg1, 4, 2);  
+      int ln = hexStrToInt(tmp);
+      free(arg2); 
+      arg2 = strSlice(raw_code, PC, ln);
       s->arg2_s = strlen(arg2);
+      free(tmp);
     }
-
+    // showMEM();
     PC += s->arg2_s;
     s->exec(arg1, arg2);
-
     free(inst);
     free(arg1);
     free(arg2);
@@ -78,11 +82,7 @@ int main(int argc, char **argv) {
     initCPU();
     initMEM();
 
-
-testMEM(); 
-// showMEM();
-    // execCode(file);
-      
+    execCode(file);
   }
 
   return 0;
