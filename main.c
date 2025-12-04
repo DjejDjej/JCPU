@@ -31,13 +31,13 @@ instSets *getInst(char *inst) {
     }
   }
   
-  printf("%s\n",inst);
+  printf("HERE??? %s\n",inst);
   throwError(1, "getInst");
   return NULL;
 }
 
 int execCode(FILE *file) {
-int count = 0;
+// int count = 0;
 char *raw_code = getRawCode(file);
   while (1) {
     fflush(stdout);

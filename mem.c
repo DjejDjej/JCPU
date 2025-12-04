@@ -40,7 +40,7 @@ instSets instSet[] = {
     {"33", inc,      2, 0},
     {"34", dec,      2, 0},
     {"41", push,     2, 0},
-    {"42", pop,      2, 2},
+    {"42", pop,      2, 0},
 };
 
 
@@ -221,7 +221,6 @@ for (int i = 0; i < ROM_SIZE; i++) {
 uint8_t memOp(int op, char *add, char *value) {
     int addr = hexStrToInt(add);
     int memType = memoryBus(add);
-    printf("\n mem type %i",memType);
     uint8_t *current = NULL;
     int offset = 0;
     int regionSize = 0;

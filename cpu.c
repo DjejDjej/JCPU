@@ -118,7 +118,7 @@ int jmpln(char *loc, char *NaN) { // label will be used later on.
   return 0;
 }
 // 14
-int movVM(char *addr, char *val) {
+int movVM(char *val, char *addr) {
 
   if (memOp(1, addr, val) != 0) {
     throwError(1, "movVM");
@@ -132,7 +132,7 @@ int movRM(char *addr, char *regVal) {
   if (memOp(1, addr, regVal) != 0) {
 
     throwError(1, "movRM");
-  };
+  }
   return 0;
 }
 // 16
@@ -148,21 +148,18 @@ int push(char *value, char *n) {
   char buff[5];
   sprintf(buff, "%x", sp);
   if (memOp(1, buff, value) != 0) {
-
     throwError(1, "push");
-  };
+  }
   return 0;
 }
 // 42
 int pop(char *dst, char *n) {
   char buff[5];
   sprintf(buff, "%x", sp);
-
-  registers[hexStrToUint8(dst)] = memOp(0, buff, NULL);
-  if (memOp(1, buff, 0) != 0) {
-
-    throwError(1, "pop");
-  };
+   registers[hexStrToUint8(dst)] = memOp(0, buff, NULL);
+   if (memOp(1, buff, "00") != 0) {
+     throwError(1, "pop");
+   }
 
   sp++;
   return 0;
