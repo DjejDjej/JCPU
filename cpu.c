@@ -1,21 +1,28 @@
 #include "cpu.h"
 #include "mem.h"
 #include "util.h"
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 uint8_t registers[REG_COUNT];
 uint16_t sp;
-
-int PC; // NEED TO IMPLEMENT REAL PC
+_Bool flags[FLAGS_COUNT];
+int PC;
 
 int initCPU() {
   for (int i = 0; i < REG_COUNT; i++) {
     registers[i] = 0;
   }
+  for (int i = 0; i < FLAGS_COUNT; i++) {
+
+    flags[i] = 0;
+  }
+
   sp = STACK_START + STACK_SIZE;
   PC = 0;
+
   return 0;
 }
 
@@ -125,6 +132,29 @@ int movVM(char *val, char *addr) {
   };
   return 0;
 }
+
+int cmp(char *arg1, char *arg2) {
+  int a1 = hexStrToInt(arg1);
+  int a2 = hexStrToInt(arg2);
+
+  if (a1 == a2 ) {
+
+    flags[0] = 1;
+    flags[1] = 1;
+
+  } else if (a1 > a2) {
+  
+    flags[1] = 1;
+  
+  }
+  else if (a1 < a2) {
+
+    flags[2] = 1;
+  }
+
+  return 0;
+}
+
 // 15
 int movRM(char *addr, char *regVal) {
   sprintf(regVal, "%d", 42);
@@ -156,10 +186,10 @@ int push(char *value, char *n) {
 int pop(char *dst, char *n) {
   char buff[5];
   sprintf(buff, "%x", sp);
-   registers[hexStrToUint8(dst)] = memOp(0, buff, NULL);
-   if (memOp(1, buff, "00") != 0) {
-     throwError(1, "pop");
-   }
+  registers[hexStrToUint8(dst)] = memOp(0, buff, NULL);
+  if (memOp(1, buff, "00") != 0) {
+    throwError(1, "pop");
+  }
 
   sp++;
   return 0;

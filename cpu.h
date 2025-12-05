@@ -23,6 +23,7 @@ int push(char *value, char *n);
 void showMem() ;
 // instructions
 #define REG_COUNT 16
+#define FLAGS_COUNT 4
 extern uint8_t registers[REG_COUNT];
 extern int PC;
 #endif
