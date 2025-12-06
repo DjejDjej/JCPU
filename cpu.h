@@ -20,12 +20,33 @@ int dec(char *reg, char *n);
 int hexStrToInt(char *str);
 int pop(char *value, char *n);
 int push(char *value, char *n);
-void showMem() ;
+int cmpRR(char *reg1, char *reg2);
+int cmpRV(char *reg1, char *val2);
+int cmpRM(char *reg1, char *mem2);
+int cmpMR(char *mem1, char *reg2);
+int jz(char *loc, char *NaN);
+int jnz(char *loc, char *NaN);
+int jc(char *loc, char *NaN);
+int jnc(char *loc, char *NaN);
+int jm(char *loc, char *NaN);
+int jp(char *loc, char *NaN);
+int jv(char *loc, char *NaN);
+int jnv(char *loc, char *NaN);
+int and(char *reg1, char *reg2);
+int or (char *reg1, char *reg2);
+int xor (char *reg1, char *reg2);
+int shl(char *reg1, char *Nan);
+int shr(char *reg1, char *Nan);
+int man_flag(char *flag, char *val);
+int man_inter(char *val, char *NaN);
+int call(char *funcPC, char *NaN2);
+int ret(char *NaN, char *NaN2);
+void showMem();
+int resetFlags();
+int printFlags();
 // instructions
 #define REG_COUNT 16
 #define FLAGS_COUNT 4
 extern uint8_t registers[REG_COUNT];
-extern int PC;
+extern int pc;
 #endif
-
-

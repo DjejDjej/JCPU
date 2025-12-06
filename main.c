@@ -30,40 +30,41 @@ instSets *getInst(char *inst) {
       return &instSet[i];
     }
   }
-  
-  printf("HERE??? %s\n",inst);
+
+  printf("HERE??? %s\n", inst);
   throwError(1, "getInst");
   return NULL;
 }
 
 int execCode(FILE *file) {
-// int count = 0;
-char *raw_code = getRawCode(file);
+  // int count = 0;
+  char *raw_code = getRawCode(file);
   while (1) {
     fflush(stdout);
-    if (PC >= strlen(raw_code)) {
+    if (pc >= strlen(raw_code)) {
       continue;
     }
-    char *inst = strSlice(raw_code, PC, INST_SIZE);
+    char *inst = strSlice(raw_code, pc, INST_SIZE);
     instSets *s = getInst(inst);
-    PC += INST_SIZE;
+    pc += INST_SIZE;
 
-    char *arg1 = strSlice(raw_code, PC, s->arg1_s);
-    PC += s->arg1_s;
+    char *arg1 = strSlice(raw_code, pc, s->arg1_s);
+    pc += s->arg1_s;
 
-    char *arg2 = strSlice(raw_code, PC, s->arg2_s);
+    char *arg2 = strSlice(raw_code, pc, s->arg2_s);
 
     if (strcmp(s->hex, "01") == 0) {
-      char *tmp = strSlice(arg1, 4, 2);  
+      char *tmp = strSlice(arg1, 4, 2);
       int ln = hexStrToInt(tmp);
-      free(arg2); 
-      arg2 = strSlice(raw_code, PC, ln);
+      free(arg2);
+      arg2 = strSlice(raw_code, pc, ln);
       s->arg2_s = strlen(arg2);
       free(tmp);
     }
     // showMEM();
-    PC += s->arg2_s;
+    pc += s->arg2_s;
     s->exec(arg1, arg2);
+    // printf("%s %s %s %i \n", inst,arg1,arg2,pc);
     free(inst);
     free(arg1);
     free(arg2);
@@ -79,8 +80,10 @@ int main(int argc, char **argv) {
     if (file == NULL) {
       return 1;
     }
+
     initCPU();
     initMEM();
+    resetFlags();
 
     execCode(file);
   }

@@ -5,28 +5,25 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 uint8_t registers[REG_COUNT];
 uint16_t sp;
+uint16_t inter;
 _Bool flags[FLAGS_COUNT];
-int PC;
+int pc;
 
 int initCPU() {
   for (int i = 0; i < REG_COUNT; i++) {
     registers[i] = 0;
   }
-  for (int i = 0; i < FLAGS_COUNT; i++) {
-
-    flags[i] = 0;
-  }
 
   sp = STACK_START + STACK_SIZE;
-  PC = 0;
+  pc = 0;
 
   return 0;
 }
 
 //// Instructions
+
 // 01
 int load(char *len, char *str) {
   char *addS = strSlice(len, 0, 4);
@@ -50,7 +47,45 @@ int load(char *len, char *str) {
   }
   free(addS);
   free(lnS);
-  // showMEM();
+  return 0;
+}
+
+// 02
+int call(char *funcPC, char *NaN2) {
+  int this_PC_i = pc;
+  char this_PC[5];
+  sprintf(this_PC, "%x", this_PC_i);
+  push(this_PC, NULL);
+  jmpln(funcPC, NULL);
+  return 0;
+}
+// 03
+int ret(char *NaN, char *NaN2) {
+
+  char ret_PC[5];
+
+  sprintf(ret_PC, "%x", sp);
+
+  int loc = memOp(0, ret_PC, NULL);
+  memOp(1, ret_PC, "00");
+  char buff[5];
+  sprintf(buff, "%x", loc);
+
+  return 0;
+}
+
+// 04
+int interupt(char *n, char *nic) {
+  switch (inter) {
+  case 1:
+    printf("%u\n", registers[hexStrToInt("0x0D")]);
+    break;
+  case 4:
+    showMEM();
+    exit(0);
+    break;
+  }
+
   return 0;
 }
 
@@ -103,27 +138,7 @@ int dec(char *reg, char *n) {
 
   return 0;
 }
-// 03
-int interupt(char *n, char *nic) {
-  switch (registers[hexStrToInt("0x0E")]) {
-  case 1:
-    printf("%u\n", registers[hexStrToInt("0x0D")]);
-    break;
-  case 4:
-    showMEM();
-    exit(0);
-    break;
-  }
 
-  return 0;
-}
-
-// 11
-int jmpln(char *loc, char *NaN) { // label will be used later on.
-
-  PC = hexStrToInt(loc);
-  return 0;
-}
 // 14
 int movVM(char *val, char *addr) {
 
@@ -133,24 +148,126 @@ int movVM(char *val, char *addr) {
   return 0;
 }
 
+int resetFlags() {
+
+  for (int i = 0; i < FLAGS_COUNT; i++) {
+    flags[i] = 0;
+  }
+  return 0;
+}
+int printFlags() {
+
+  printf("zero flag %i\n", flags[0]);
+  printf("carry flag %i\n", flags[1]);
+  printf("neg flag %i\n", flags[2]);
+  printf("overflow flag %i\n", flags[3]);
+  printf("\n");
+  return 0;
+}
+
 int cmp(char *arg1, char *arg2) {
   int a1 = hexStrToInt(arg1);
   int a2 = hexStrToInt(arg2);
-
-  if (a1 == a2 ) {
-
+  int calc = a1 - a2;
+  resetFlags();
+  if (calc == 0) {
     flags[0] = 1;
-    flags[1] = 1;
+  } // Zero
 
-  } else if (a1 > a2) {
-  
+  if ((uint32_t)a1 < (uint32_t)a2) {
     flags[1] = 1;
-  
-  }
-  else if (a1 < a2) {
+  } // Carry (unsigned borrow)
 
+  if (calc < 0) {
     flags[2] = 1;
+  } // Negative
+
+  if (((a1 ^ a2) & (a1 ^ calc)) < 0)
+    flags[3] = 1;
+
+  return 0;
+}
+
+// 21
+int cmpRV(char *reg1, char *val2) {
+
+  char arg1[3];
+  uint8_t arg1_i = registers[hexStrToUint8(reg1)];
+  sprintf(arg1, "%x", arg1_i);
+
+  if (cmp(arg1, val2) == 1) {
+    return 1;
   }
+
+  return 0;
+}
+
+// 22
+
+int cmpRR(char *reg1, char *reg2) {
+
+  char arg1[3];
+  uint8_t arg1_i = registers[hexStrToUint8(reg1)];
+  sprintf(arg1, "%x", arg1_i);
+
+  char arg2[3];
+  uint8_t arg2_i = registers[hexStrToUint8(reg2)];
+  sprintf(arg2, "%x", arg2_i);
+  cmp(arg1, arg2);
+  if (cmp(arg1, arg2) == 1) {
+    return 1;
+  }
+
+  return 0;
+}
+
+// 23
+int cmpRM(char *reg1, char *mem2) {
+
+  char arg1[3];
+  uint8_t arg1_i = registers[hexStrToUint8(reg1)];
+  sprintf(arg1, "%x", arg1_i);
+
+  char arg2[3];
+  uint8_t arg2_i = memOp(0, mem2, NULL);
+  sprintf(arg2, "%x", arg2_i);
+
+  if (cmp(arg1, arg2) == 1) {
+    return 1;
+  }
+
+  return 0;
+}
+
+// 24
+
+int cmpMR(char *mem1, char *reg2) {
+
+  char arg1[3];
+  uint8_t arg2_i = memOp(0, mem1, NULL);
+  sprintf(arg1, "%x", arg2_i);
+
+  char arg2[3];
+  uint8_t arg1_i = registers[hexStrToUint8(reg2)];
+  sprintf(arg2, "%x", arg1_i);
+
+  if (cmp(arg1, arg2) == 1) {
+    return 1;
+  }
+
+  return 0;
+}
+
+// 25
+int man_flag(char *flag, char *val) {
+  flags[hexStrToInt(flag)] = hexStrToInt(val);
+
+  return 0;
+}
+
+// 26
+int man_inter(char *val, char *NaN) {
+  inter = hexStrToInt(val);
 
   return 0;
 }
@@ -192,6 +309,132 @@ int pop(char *dst, char *n) {
   }
 
   sp++;
+  return 0;
+}
+
+// 51
+int jmpln(char *loc, char *NaN) {
+  pc = hexStrToInt(loc);
+  return 0;
+}
+
+// 52
+
+int jz(char *loc, char *NaN) {
+
+  if (flags[0] == 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+
+// 53
+int jnz(char *loc, char *NaN) {
+
+  if (flags[0] != 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+// 54
+int jc(char *loc, char *NaN) {
+
+  if (flags[1] == 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+// 55
+int jnc(char *loc, char *NaN) {
+
+  if (flags[1] != 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+// 56
+int jm(char *loc, char *NaN) {
+
+  if (flags[2] == 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+// 57
+int jp(char *loc, char *NaN) {
+
+  if (flags[2] != 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+// 58
+int jv(char *loc, char *NaN) {
+
+  if (flags[3] == 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+// 59
+int jnv(char *loc, char *NaN) {
+
+  if (flags[3] != 0) {
+    jmpln(loc, NaN);
+  }
+
+  return 0;
+}
+
+// 61
+int and(char *reg1, char *reg2) {
+
+  uint8_t reg1_pos = hexStrToUint8(reg1);
+
+  registers[reg1_pos] = registers[reg1_pos] & registers[reg1_pos];
+  return 0;
+}
+
+// 62
+int or(char *reg1, char *reg2) {
+
+  uint8_t reg1_pos = hexStrToUint8(reg1);
+
+  registers[reg1_pos] = registers[reg1_pos] | registers[reg1_pos];
+  return 0;
+}
+
+// 63
+int xor(char *reg1, char *reg2) {
+
+  uint8_t reg1_pos = hexStrToUint8(reg1);
+
+  registers[reg1_pos] = registers[reg1_pos] ^ registers[reg1_pos];
+  return 0;
+}
+
+// 64
+int shl(char *reg1, char *Nan) {
+
+  uint8_t reg1_pos = hexStrToUint8(reg1);
+
+  registers[reg1_pos] = registers[reg1_pos] << 1;
+  return 0;
+}
+
+// 65
+int shr(char *reg1, char *Nan) {
+
+  uint8_t reg1_pos = hexStrToUint8(reg1);
+
+  registers[reg1_pos] = registers[reg1_pos] >> 1;
   return 0;
 }
 

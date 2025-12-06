@@ -33,7 +33,7 @@ int memoryBus(char *addS);
 void testMEM();
 void showMEM();
 
-#define INST_COUNT 14
+#define INST_COUNT 34 
 #define INST_SIZE 2
 
 #endif
