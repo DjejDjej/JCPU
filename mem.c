@@ -40,6 +40,7 @@ instSets instSet[] = {
     {"02", call,     4, 0},
     {"03", ret,      0, 0},
     {"04", interupt, 0, 0},
+    {"05", hlt,      0, 0},
     {"12", movRV,    2, 2},
     {"13", movRR,    2, 2},
     {"14", movVM,    2, 4},

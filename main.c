@@ -38,8 +38,17 @@ instSets *getInst(char *inst) {
 
 int execCode(FILE *file) {
   // int count = 0;
+
   char *raw_code = getRawCode(file);
-  while (1) {
+  int code_len = strlen(raw_code);
+  if (code_len % 2 != 0) {
+    printf("Wrong code\n");
+    free(raw_code);
+    fclose(file);
+    return 0;
+  }
+
+  while (!halt) {
     fflush(stdout);
     if (pc >= strlen(raw_code)) {
       continue;
@@ -69,6 +78,7 @@ int execCode(FILE *file) {
     free(arg1);
     free(arg2);
   }
+  free(raw_code);
   return 1;
 }
 
@@ -86,6 +96,7 @@ int main(int argc, char **argv) {
     resetFlags();
 
     execCode(file);
+    fclose(file);
   }
 
   return 0;

@@ -5,11 +5,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 uint8_t registers[REG_COUNT];
 uint16_t sp;
 uint16_t inter;
 _Bool flags[FLAGS_COUNT];
 int pc;
+_Bool halt = 0;
 
 int initCPU() {
   for (int i = 0; i < REG_COUNT; i++) {
@@ -86,6 +88,10 @@ int interupt(char *n, char *nic) {
     break;
   }
 
+  return 0;
+}
+int hlt(char *n, char *NaN) {
+  halt = 1;
   return 0;
 }
 

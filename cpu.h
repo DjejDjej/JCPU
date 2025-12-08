@@ -41,6 +41,7 @@ int man_flag(char *flag, char *val);
 int man_inter(char *val, char *NaN);
 int call(char *funcPC, char *NaN2);
 int ret(char *NaN, char *NaN2);
+int hlt(char *n, char *NaN);
 void showMem();
 int resetFlags();
 int printFlags();
@@ -49,4 +50,5 @@ int printFlags();
 #define FLAGS_COUNT 4
 extern uint8_t registers[REG_COUNT];
 extern int pc;
+extern _Bool halt;
 #endif
