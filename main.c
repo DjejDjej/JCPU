@@ -25,27 +25,20 @@ char *getRawCode(FILE *file) {
 
 instSets *getInst(char *inst) {
 
-  for (size_t i = 0; i < INST_COUNT; i++) {
+  for (size_t i = 1; i < INST_COUNT; i++) {
     if (strcmp(instSet[i].hex, inst) == 0) {
       return &instSet[i];
     }
   }
-
-  printf("HERE??? %s\n", inst);
-  throwError(1, "getInst");
-  return NULL;
+  return &instSet[0];
 }
 
 int execCode(FILE *file) {
-  // int count = 0;
-
   char *raw_code = getRawCode(file);
   int code_len = strlen(raw_code);
   if (code_len % 2 != 0) {
-    printf("Wrong code\n");
-    free(raw_code);
-    fclose(file);
-    return 0;
+    printf("propably wrong code, odd number of bytes \n");
+    halt = 1;
   }
 
   while (!halt) {
@@ -53,8 +46,14 @@ int execCode(FILE *file) {
     if (pc >= strlen(raw_code)) {
       continue;
     }
+
     char *inst = strSlice(raw_code, pc, INST_SIZE);
     instSets *s = getInst(inst);
+
+    if (strcmp(s->hex,"00") == 0) {
+      printf("Wrong instruction at %i [%x] - instruction -> %s\n", pc+1, pc+1, inst);
+      halt = 1;
+    }
     pc += INST_SIZE;
 
     char *arg1 = strSlice(raw_code, pc, s->arg1_s);
@@ -73,11 +72,11 @@ int execCode(FILE *file) {
     // showMEM();
     pc += s->arg2_s;
     s->exec(arg1, arg2);
-    // printf("%s %s %s %i \n", inst,arg1,arg2,pc);
     free(inst);
     free(arg1);
     free(arg2);
   }
+
   free(raw_code);
   return 1;
 }

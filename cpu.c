@@ -26,6 +26,13 @@ int initCPU() {
 
 //// Instructions
 
+// 00
+int null(char *len, char *str) {
+
+  printf("Cannot call non existing instruction \n");
+  return 1;
+}
+
 // 01
 int load(char *len, char *str) {
   char *addS = strSlice(len, 0, 4);

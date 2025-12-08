@@ -42,6 +42,7 @@ int man_inter(char *val, char *NaN);
 int call(char *funcPC, char *NaN2);
 int ret(char *NaN, char *NaN2);
 int hlt(char *n, char *NaN);
+int null(char *len, char *str);
 void showMem();
 int resetFlags();
 int printFlags();

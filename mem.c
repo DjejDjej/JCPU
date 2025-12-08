@@ -36,6 +36,7 @@ uint8_t ROM[ROM_SIZE];
 
 instSets instSet[] = {
 //   inst  cfunc     arg1 arg2
+    {"00", null,     0, 0},
     {"01", load,     6, 0},
     {"02", call,     4, 0},
     {"03", ret,      0, 0},
@@ -44,9 +45,9 @@ instSets instSet[] = {
     {"12", movRV,    2, 2},
     {"13", movRR,    2, 2},
     {"14", movVM,    2, 4},
-    {"15", man_flag, 2, 2},
-    {"16", man_inter,2, 0},
     {"15", movRM,    2, 4},
+    {"16", man_inter,2, 0},
+    {"17", man_flag, 2, 2},
     {"21", cmpRV,    2, 2},
     {"22", cmpRR,    2, 2},
     {"23", cmpMR,    4, 2},

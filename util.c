@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+#include "cpu.h"
+
+
 int16_t hexStrToInt16(const char *str) {
   char *endptr = NULL;
   errno = 0;
@@ -66,6 +70,10 @@ char *strSlice(const char *str, int start, int num_chars) {
 }
 
 
+
+
+
+
 void throwError(int code, char *func){
 
 if(code == 0){
@@ -88,7 +96,6 @@ exit(0);
 }
 
 
-exit(0);
 }
 
 
