@@ -1,4 +1,5 @@
 #define _POSIX_C_SOURCE 200809L
+#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,29 +31,26 @@ int writeResult(char *out_file, const char *result) {
   return 0;
 }
 
-int getSplitedCode(char *code) {
-
-  char *token;
-  char *delim = " ";
-  char *next = NULL;
-  int count = 0;
-  char **out_code; 
-  token = strtok_r(code, delim, &next);
-  while (token != NULL) {
-    if (token[strlen(token) - 1] == '\n') {
-      count++;
-    }
-    printf("%s ", token);
-    out_code[count] = realloc(out_code[count], count);
-    strcpy(out_code[count], token);
-    token = strtok_r(NULL, delim, &next);
+int splitLine(const char *line) {
+  if (line == NULL) {
+    return 1;
   }
 
-  for (int i = 0; i < count; i++) {
-    // printf("%s", out_code[count]);
+ // projet pismenko po pismneku a nejak rozdelit? idk 
+
+  return 0;
+}
+
+int getSplitedCode(const char *code) {
+  char *code_cp = strdup(code);
+  char *tok = strtok(code_cp, "\n");
+
+  while (tok != NULL) {
+    splitLine(tok);
+    tok = strtok(NULL, "\n");
   }
 
-  free(out_code);
+  free(code_cp);
   return 0;
 }
 
@@ -61,10 +59,6 @@ int main(int argc, char **argv) {
   if (argc > 2) {
 
     char *res = getFileContent(argv[1]);
-    // writeResult(argv[2], res);
     getSplitedCode(res);
-    free(res);
-
-  } else {
   }
 }
