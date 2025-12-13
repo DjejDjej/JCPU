@@ -1,5 +1,5 @@
-mov [1000] 20
-mov [1001] 21
-mov [1002] 22
-mov [1003] 23
-mov [1004] 24
+mov r1 10  
+mov r2 10  
+mov r3 10  
+mov r4 10  
+mov r5 10  

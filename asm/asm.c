@@ -92,7 +92,7 @@ if(strlen(arg2) != s.arg2_size ){
   pc+= INST_SIZE;
   pc+= s.arg1_size;
   pc+= s.arg2_size;
-  printf("%s %s %s",s.hex_name,s.arg1,s.arg2);
+  printf("%s %s %s \n",s.hex_name,s.arg1,s.arg2);
 
   free(arg1);
   free(arg2);

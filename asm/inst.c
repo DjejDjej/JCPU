@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include "inst.h"
 #include "../util.h"
 #include <stdio.h>
@@ -38,7 +39,25 @@ char getArgType(const char *arg, const int arg_size) {
   
   return 'V';
 }
-char *translateReg(char *arg) { return NULL; }
+
+
+char *translateReg(const char *arg) { 
+ char *tmp= strdup(arg) ;
+ char *res = malloc(4);
+ if(arg[0] == 'r' && strlen(arg) == 2){
+   
+   tmp= strSlice(tmp,1,1);
+
+   snprintf(res,3,"0%s",tmp);
+
+   free(tmp);
+   return res;
+ }
+
+   free(tmp);
+  return NULL; 
+
+ }
 
 
 char *removeChars(const char *arg, char type, int arg_size) {
