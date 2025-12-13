@@ -153,7 +153,7 @@ int dec(char *reg, char *n) {
 }
 
 // 14
-int movVM(char *val, char *addr) {
+int movMV(char *addr, char *val) {
 
   if (memOp(1, addr, val) != 0) {
     throwError(1, "movVM");

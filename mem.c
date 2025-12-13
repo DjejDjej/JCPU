@@ -44,7 +44,7 @@ instSets instSet[] = {
     {"05", hlt,      0, 0},
     {"12", movRV,    2, 2},
     {"13", movRR,    2, 2},
-    {"14", movVM,    2, 4},
+    {"14", movMV,    4, 2},
     {"15", movRM,    2, 4},
     {"16", man_inter,2, 0},
     {"17", man_flag, 2, 2},

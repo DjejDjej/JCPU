@@ -10,7 +10,7 @@ int load(char *len, char *str);
 int interupt(char *n, char *nic);
 int movRV(char *value1, char *value2);
 int movRR(char *desReg, char *srcReg);
-int movVM(char *addr, char *val);
+int movMV(char *addr, char *val);
 int movRM(char *addr, char *regVal);
 int movMR(char *addr, char *regVal);
 int addRR(char *desReg, char *srcReg);
