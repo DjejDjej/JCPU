@@ -99,6 +99,7 @@ int interupt(char *n, char *nic) {
 }
 int hlt(char *n, char *NaN) {
   halt = 1;
+  showMEM();
   return 0;
 }
 
